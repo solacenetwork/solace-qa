@@ -73,3 +73,18 @@ The original QA-3 verification scope follows for reference; technical cases list
 9. Verify CSRF rejection and session initialization failure (HTTP 500) without data mutation. With display_errors disabled, no internal paths should appear in the response.
 10. Verify severity track follows the thumb at 0, 5, 10 and resets to 0; verify environment button order remains Forget then Detect.
 11. Verify desktop and phone attachment picker and successful submission. Hosted upload configuration and isolation remain QA-6 checks.
+
+## QA-4 acceptance (pending)
+
+Check `php -m | grep -i '^zip$'` before testing. Use disposable fixture data for any failure simulations.
+
+1. Export existing pending observations using the new button. Confirm verified counts and download the ZIP.
+2. Confirm daily filename qa-reports-YYYY-MM-DD-001.zip (or next available sequence), private archive in data/archives and matching export-history.json entry.
+3. Open ZIP; confirm manifest.json, submissions.json, and only referenced pics/ entries. Verify report IDs, image counts, dataset mapping and file inventory.
+4. Independently verify SHA-256 and byte sizes of all payload entries, and ZIP checksum against history. Compare reports and images to originals.
+5. Export again without submitting: no pending observations, no new ZIP or history entry.
+6. Submit another observation (including a screenshot if desired), export again: only new report(s) included, incremented filename, distinct export UUID, prior archive/history intact.
+7. Verify original submissions.json and pics/ remain unchanged by export; reviewed_at stays null.
+8. Verify download link works again and invalid UUID/path requests cannot serve private files. Direct archive URL must not expose ZIP bytes.
+9. Optional controlled fixture checks: missing referenced screenshot prevents export, restoring it permits retry; remove only the last history record from a disposable dataset and retry export to verify recovery of the finalized ZIP without duplicate creation. Do not edit actual QA history for testing.
+10. Verify POST and CSRF protection; history interface and review mutation are QA-5.

@@ -86,6 +86,14 @@ if (!isset($_SESSION['csrf'])) {
 </section>
 <div class="qa-actions"><button type="reset" class="btn-outline theme-danger">Reset observation</button><button type="submit" class="btn-solid theme-success">Submit observation</button></div>
 </form>
+<section class="qa-section" aria-labelledby="export-title">
+<h2 id="export-title">Export observations</h2>
+<p>Create a verified ZIP of reports not previously exported. Existing observations and archives are retained.</p>
+<form action="export.php" method="post">
+<input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf'], ENT_QUOTES, 'UTF-8') ?>">
+<button type="submit" class="btn-solid theme-primary">Export pending observations</button>
+</form>
+</section>
 </main>
 </body>
 </html>
