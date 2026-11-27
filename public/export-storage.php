@@ -3,7 +3,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/storage.php';
 
 const QA_EXPORT_FORMAT = 1;
-const QA_GENERATOR_VERSION = 'QA-4';
+const QA_GENERATOR_VERSION = 'QA-5';
 
 function qa_json(array $value): string
 {
@@ -325,6 +325,54 @@ function qa_create_export(string $directory): ?array
         if (is_string($temp) && is_file($temp)) {
             @unlink($temp);
         }
+        flock($lock, LOCK_UN);
+        fclose($lock);
+    }
+}
+
+
+// Reconcile before displaying counts so a recovered batch cannot appear pending.
+// Review changes share the same lock and atomic history replacement as exports.
+function qa_history_snapshot(string $directory, ?string $reviewId = null): array
+{
+    qa_ensure_directory($directory);
+    $lock = fopen($directory . '/storage.lock', 'c');
+    if ($lock === false) {
+        throw new RuntimeException('Cannot open storage lock.');
+    }
+    try {
+        if (!flock($lock, LOCK_EX)) {
+            throw new RuntimeException('Cannot acquire storage lock.');
+        }
+        qa_ensure_directory($directory . '/archives');
+        $reports = qa_read_list($directory . '/submissions.json');
+        [$history, $exported] = qa_reconcile_history($directory, $reports);
+        if ($reviewId !== null) {
+            $found = false;
+            foreach ($history as &$batch) {
+                if ($batch['export_uuid'] !== $reviewId) {
+                    continue;
+                }
+                $found = true;
+                if (($batch['reviewed_at'] ?? null) === null) {
+                    $batch['reviewed_at'] = date(DATE_ATOM);
+                    qa_save_history($directory, $history);
+                }
+                break;
+            }
+            unset($batch);
+            if (!$found) {
+                throw new OutOfBoundsException('Export not found.');
+            }
+        }
+        usort($history, static fn(array $a, array $b): int =>
+            strcmp($b['generated_at'], $a['generated_at']) ?: strnatcmp($b['archive_name'], $a['archive_name']));
+        return [
+            'pending' => count($reports) - count($exported),
+            'exported' => count($exported),
+            'history' => $history,
+        ];
+    } finally {
         flock($lock, LOCK_UN);
         fclose($lock);
     }

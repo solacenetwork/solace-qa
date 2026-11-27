@@ -74,7 +74,12 @@ The original QA-3 verification scope follows for reference; technical cases list
 10. Verify severity track follows the thumb at 0, 5, 10 and resets to 0; verify environment button order remains Forget then Detect.
 11. Verify desktop and phone attachment picker and successful submission. Hosted upload configuration and isolation remain QA-6 checks.
 
-## QA-4 acceptance (pending)
+## QA-4 acceptance (accepted, 2026-11-27)
+
+All 28 manual acceptance checks passed. Two ZIPs were exchanged and independently checked: batch 001 contained 13 reports and 11 screenshots; batch 002 contained 1 report and 1 screenshot. Payload inventories, sizes, SHA-256 hashes and associations matched; report UUIDs did not overlap. Both complete ZIP hashes matched the tester's local hashes. Repeat export with no pending reports created no archive. Historical download by export UUID worked. Original data and export history remained intact.
+
+Controlled interruption, write-failure, concurrent export and deliberate endpoint security simulations were not independently confirmed; retain the safeguards and treat these cases as unverified. QA-5 adds the pending count and disables export at zero as requested during acceptance.
+
 
 Check `php -m | grep -i '^zip$'` before testing. Use disposable fixture data for any failure simulations.
 
@@ -88,3 +93,14 @@ Check `php -m | grep -i '^zip$'` before testing. Use disposable fixture data for
 8. Verify download link works again and invalid UUID/path requests cannot serve private files. Direct archive URL must not expose ZIP bytes.
 9. Optional controlled fixture checks: missing referenced screenshot prevents export, restoring it permits retry; remove only the last history record from a disposable dataset and retry export to verify recovery of the finalized ZIP without duplicate creation. Do not edit actual QA history for testing.
 10. Verify POST and CSRF protection; history interface and review mutation are QA-5.
+
+## QA-5 acceptance (pending)
+
+1. Open the form with existing QA-4 archives. Verify pending 0, exported 14 and archives 2 if the accepted test dataset is unchanged; export is disabled.
+2. History shows both archives newest first, correct dates, counts, filenames and Not reviewed.
+3. Download each historical ZIP and compare its SHA-256 with the existing history.
+4. Mark the older archive reviewed. Verify return to history, reviewed timestamp persisted after reload, other archive still unreviewed, and no changes to counts or ZIP contents.
+5. Submit a new observation and return to the form. Verify pending increases and export enables even if another batch is unreviewed.
+6. Export the new observation. Verify pending becomes zero and export disables on return; history includes the new unreviewed archive while prior review status persists.
+7. Verify history and form usability on phone and desktop, including keyboard navigation and wrapped filenames.
+8. Optional fixture checks: invalid review ID, invalid CSRF, GET review request, repeated valid review request (timestamp unchanged), missing archive and recovery of finalized archive absent from history. Do not manipulate actual QA data to simulate errors.

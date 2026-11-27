@@ -7,6 +7,16 @@ if (!session_start()) {
 if (!isset($_SESSION['csrf'])) {
     $_SESSION['csrf'] = bin2hex(random_bytes(32));
 }
+require_once __DIR__ . '/export-storage.php';
+$csrf = $_SESSION['csrf'];
+session_write_close();
+header('Cache-Control: no-store');
+$exportState = null;
+try {
+    $exportState = qa_history_snapshot(dirname(__DIR__) . '/data');
+} catch (Throwable $error) {
+    error_log('SOLACE QA history: ' . $error->getMessage());
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -27,7 +37,7 @@ if (!isset($_SESSION['csrf'])) {
 </header>
 <p>Capture a testing observation. Required fields are marked *.</p>
 <form action="formhandler.php" method="post" enctype="multipart/form-data" id="observation-form">
-<input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf'], ENT_QUOTES, 'UTF-8') ?>">
+<input type="hidden" name="csrf" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
 <section class="qa-section" aria-labelledby="environment-title">
 <details id="environment-details" open>
 <summary><span id="environment-title">Testing environment</span><span id="environment-summary"></span></summary>
@@ -89,10 +99,49 @@ if (!isset($_SESSION['csrf'])) {
 <section class="qa-section" aria-labelledby="export-title">
 <h2 id="export-title">Export observations</h2>
 <p>Create a verified ZIP of reports not previously exported. Existing observations and archives are retained.</p>
+<?php if ($exportState === null): ?>
+<p role="alert">Export status unavailable. Check the server log and reload the page. Observation capture remains available.</p>
+<button type="button" class="btn-solid theme-primary" disabled>Export pending observations</button>
+<?php else: ?>
+<p><strong>Pending:</strong> <?= $exportState['pending'] ?> · <strong>Exported:</strong> <?= $exportState['exported'] ?> · <strong>Archives:</strong> <?= count($exportState['history']) ?></p>
 <form action="export.php" method="post">
-<input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf'], ENT_QUOTES, 'UTF-8') ?>">
-<button type="submit" class="btn-solid theme-primary">Export pending observations</button>
+<input type="hidden" name="csrf" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
+<button type="submit" class="btn-solid theme-primary"<?= $exportState['pending'] === 0 ? ' disabled' : '' ?>>Export pending observations (<?= $exportState['pending'] ?>)</button>
 </form>
+<?php endif; ?>
+</section>
+<section class="qa-section" id="export-history" aria-labelledby="history-title">
+<h2 id="history-title">Export history</h2>
+<?php if (($_GET['review'] ?? '') === 'saved' && $exportState !== null): ?>
+<p role="status">Export marked as reviewed.</p>
+<?php endif; ?>
+<?php if ($exportState === null): ?>
+<p>Export history is unavailable.</p>
+<?php elseif ($exportState['history'] === []): ?>
+<p>No archives yet.</p>
+<?php else: ?>
+<?php foreach ($exportState['history'] as $batch): ?>
+<article class="qa-history-item">
+<h3><?= htmlspecialchars($batch['archive_name'], ENT_QUOTES, 'UTF-8') ?></h3>
+<p><?= htmlspecialchars($batch['generated_at'], ENT_QUOTES, 'UTF-8') ?><br><?= (int) $batch['report_count'] ?> observations · <?= (int) $batch['image_count'] ?> screenshots</p>
+<?php if (($batch['reviewed_at'] ?? null) !== null): ?>
+<p><strong>Reviewed:</strong> <?= htmlspecialchars($batch['reviewed_at'], ENT_QUOTES, 'UTF-8') ?></p>
+<?php else: ?>
+<p><strong>Not reviewed</strong></p>
+<?php endif; ?>
+<div class="qa-actions">
+<a class="btn-outline theme-primary" href="download.php?id=<?= rawurlencode($batch['export_uuid']) ?>">Download ZIP</a>
+<?php if (($batch['reviewed_at'] ?? null) === null): ?>
+<form action="review.php" method="post">
+<input type="hidden" name="csrf" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
+<input type="hidden" name="id" value="<?= htmlspecialchars($batch['export_uuid'], ENT_QUOTES, 'UTF-8') ?>">
+<button type="submit" class="btn-solid theme-success">Mark reviewed</button>
+</form>
+<?php endif; ?>
+</div>
+</article>
+<?php endforeach; ?>
+<?php endif; ?>
 </section>
 </main>
 </body>

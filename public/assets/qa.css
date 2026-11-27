@@ -23,3 +23,9 @@ body {
 #environment-summary:empty, #environment-details[open] #environment-summary { display: none; }
 .qa-environment-body { padding-top: 1rem; }
 .qa-range-labels { display: flex; justify-content: space-between; font-size: .875rem; }
+
+.qa-history-item { border-top: 1px solid var(--bs-border-color, #ccc); padding-block: 1rem; overflow-wrap: anywhere; }
+.qa-history-item h3 { font-size: 1rem; margin-bottom: .5rem; }
+.qa-history-item p { margin-bottom: .5rem; }
+.qa-history-item .qa-actions { margin-bottom: 0; }
+.qa-history-item .qa-actions form { margin: 0; }
