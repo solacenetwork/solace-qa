@@ -97,10 +97,10 @@ Check `php -m | grep -i '^zip$'` before testing. Use disposable fixture data for
 ## QA-5 acceptance (pending)
 
 1. Open the form with existing QA-4 archives. Verify pending 0, exported 14 and archives 2 if the accepted test dataset is unchanged; export is disabled.
-2. History shows both archives newest first, correct dates, counts, filenames and Not reviewed.
+2. Verify the observation form shows only the export summary and controls, not the archive list. View export history opens export-history.php; both archives appear newest first with correct dates, counts, filenames and Not reviewed. Return to observation form opens index.php.
 3. Download each historical ZIP and compare its SHA-256 with the existing history.
-4. Mark the older archive reviewed. Verify return to history, reviewed timestamp persisted after reload, other archive still unreviewed, and no changes to counts or ZIP contents.
+4. Mark the older archive reviewed. Verify redirect to export-history.php, reviewed timestamp persisted after reload, other archive still unreviewed, and no changes to counts or ZIP contents.
 5. Submit a new observation and return to the form. Verify pending increases and export enables even if another batch is unreviewed.
-6. Export the new observation. Verify pending becomes zero and export disables on return; history includes the new unreviewed archive while prior review status persists.
+6. Export the new observation. Verify pending becomes zero and export disables on return; the export confirmation page links to export-history.php, which includes the new unreviewed archive while prior review status persists.
 7. Verify history and form usability on phone and desktop, including keyboard navigation and wrapped filenames.
 8. Optional fixture checks: invalid review ID, invalid CSRF, GET review request, repeated valid review request (timestamp unchanged), missing archive and recovery of finalized archive absent from history. Do not manipulate actual QA data to simulate errors.

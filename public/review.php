@@ -30,7 +30,7 @@ try {
 } catch (Throwable $error) {
     error_log('SOLACE QA review: ' . $error->getMessage());
     http_response_code(500);
-    exit('Unable to save review status. Return to the observation form and retry.');
+    exit('Unable to save review status. Return to export history and retry.');
 }
-header('Location: index.php?review=saved#export-history', true, 303);
+header('Location: export-history.php?review=saved#export-history', true, 303);
 exit;

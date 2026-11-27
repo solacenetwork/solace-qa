@@ -53,7 +53,7 @@ try {
 <p>SHA-256: <code style="overflow-wrap:anywhere"><?= htmlspecialchars($batch['archive_sha256'], ENT_QUOTES, 'UTF-8') ?></code></p>
 <p><a class="btn-solid theme-primary" href="download.php?id=<?= rawurlencode($batch['export_uuid']) ?>">Download ZIP</a></p>
 <?php endif; ?>
-<p><a href="index.php">Return to observation form</a> · <a href="index.php#export-history">View export history</a></p>
+<p><a href="index.php">Return to observation form</a> · <a href="export-history.php">View export history</a></p>
 </main>
 </body>
 </html>
