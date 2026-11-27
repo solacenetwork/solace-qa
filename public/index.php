@@ -45,8 +45,8 @@ if (!isset($_SESSION['csrf'])) {
 <div class="form-field"><label for="interface_mode" class="form-label">Interface mode</label><select class="form-control" id="interface_mode" name="interface_mode" ><option value="">Select</option><option>Simple</option><option>Standard</option><option>Not applicable</option><option>Unknown</option></select></div>
 </div>
 <div class="qa-actions">
-<button type="button" class="btn-outline theme-primary" id="detect-environment">Use this browser's environment</button>
-<button type="button" class="btn-outline theme-danger" id="forget-environment">Forget saved environment</button>
+    <button type="button" class="btn-outline theme-danger" id="forget-environment">Forget saved environment</button>
+    <button type="button" class="btn-outline theme-primary" id="detect-environment">Use this browser's environment</button>
 </div>
 <div class="form-field"><input type="checkbox" class="check" id="remember-environment" checked><label for="remember-environment">Remember environment for future reports on this browser</label></div>
 <p id="environment-message" role="status"></p>
