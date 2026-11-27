@@ -1,5 +1,18 @@
 # SOLACE QA testing
 
+## Local test setup
+
+Run from the repository root using a private PHP session directory (confirmed on LMDE during QA-2 acceptance on 2026-11-27):
+
+```sh
+mkdir -p -m 700 "$HOME/.php-sessions/solace-qa"
+php -d session.save_path="$HOME/.php-sessions/solace-qa" -S localhost:8001 -t public
+```
+
+Open http://localhost:8001/. Use another unused port if necessary. If submission returns HTTP 403 with `Invalid form session. Please reload the form.`, check the PHP server log for `session_start()` permission or session-read failures. Restart with the above session path and reload the form; clear the localhost `PHPSESSID` cookie if needed. Do not weaken system PHP session permissions. Retry the submission and verify the report in `data/submissions.json`.
+
+Follow-up application hardening: check the return value of `session_start()` on the form and submission endpoints. If initialization fails, return an appropriate server configuration error (HTTP 500), do not render an unusable form or accept mutations, and keep internal paths and diagnostic details in server logs rather than the browser. Verify this failure path separately; the local launch workaround does not replace application error handling.
+
 ## QA-1 acceptance (local functional pass, 2026-11-27)
 1. Start PHP with public/ as document root. Verify SOLACE QA title and round logo at 80 CSS px width.
 2. Submit a meaningful observation; verify data/submissions.json outside public/ contains it.
