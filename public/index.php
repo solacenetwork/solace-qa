@@ -11,7 +11,7 @@ if (!isset($_SESSION['csrf'])) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SOLACE QA</title>
-<link rel="icon" href="solace-logo-round-black.svg" sizes="any" type="image/svg+xml">
+<link rel="icon" href="assets/solace-logo-round-black.svg" sizes="any" type="image/svg+xml">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="assets/qa.css" rel="stylesheet">
 <script src="assets/qa.js" defer></script>
