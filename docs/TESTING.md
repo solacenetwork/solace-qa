@@ -4,7 +4,7 @@
 1. Start PHP with public/ as document root. Verify SOLACE QA title and round logo at 80 CSS px width.
 2. Submit a meaningful observation; verify data/submissions.json outside public/ contains it.
 3. Submit a second observation; verify both persist and invalid submissions do not alter data.
-4. Verify /data/submissions.json cannot be downloaded directly. Tester reports no JSON exposed but HTTP status not confirmed; recheck using curl -i.
+4. Verify /data/submissions.json cannot be downloaded directly. Local curl returns the application form, not JSON. Isolation passes locally; verify independently on Hostinger.
 5. On Hostinger, verify authenticated access, HTTPS, PHP write permission to sibling data/ and availability of Fileinfo/ZipArchive. Do not deploy a diagnostic phpinfo page.
 6. Verify redeploying public/ does not replace report data or authentication configuration.
 
@@ -17,5 +17,7 @@
 6. Verify new report fields in JSON and previous valid primary copied to .bak. Existing records unchanged.
 7. Invalid required field, date, selection or CSRF token must not change primary/backup.
 8. Verify desktop/mobile layout and keyboard operation.
+9. Environment is open without saved required values, collapsed with saved project/device, and opens for invalid hidden fields. Summary reflects current values. Verify single Interface Mode field.
+10. Verify primary/danger outline environment actions, green success submit button, range track/thumb, labels and live value at 0, 5 and 10; reset returns severity to 0.
 
 Later acceptance must cover multiple devices, environment overrides, attachments, failed uploads, concurrent writes/exports, interrupted export recovery, checksum/count validation, repeat export exclusion, archive re-download and reviewed state.

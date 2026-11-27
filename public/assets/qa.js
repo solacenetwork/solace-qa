@@ -1,9 +1,14 @@
 'use strict';
 const form = document.getElementById('observation-form');
-const keys = ["project","app_version","device","device_model","os","browser","orientation","context","viewport","screen","pixel_ratio","interface_preference","interface_mode"];
+const keys = ["project","app_version","device","device_model","os","browser","orientation","context","viewport","screen","pixel_ratio","interface_mode"];
 const storageKey = 'solace-qa.environment.v1';
 const remember = document.getElementById('remember-environment');
 const message = document.getElementById('environment-message');
+const details = document.getElementById('environment-details');
+const summary = document.getElementById('environment-summary');
+function updateSummary() {
+    summary.textContent = [form.elements.project.value, form.elements.browser.value, form.elements.device.value, form.elements.interface_mode.value].filter(Boolean).join(' · ');
+}
 const readEnvironment = () => Object.fromEntries(keys.map(key => [key, form.elements[key].value]));
 function applyEnvironment(values) {
     for (const key of keys) {
@@ -39,9 +44,17 @@ setDate();
 form.elements.reproducibility.value = 'Not retested';
 try {
     const saved = localStorage.getItem(storageKey);
-    if (saved) applyEnvironment(JSON.parse(saved));
+    if (saved) {
+        applyEnvironment(JSON.parse(saved));
+        if (form.elements.project.value.trim() && form.elements.device.value) details.open = false;
+    }
 } catch { message.textContent = 'Saved environment could not be loaded.'; }
-document.getElementById('detect-environment').addEventListener('click', detectEnvironment);
+updateSummary();
+for (const key of keys) form.elements[key].addEventListener('input', updateSummary);
+form.addEventListener('invalid', event => {
+    if (details.contains(event.target)) details.open = true;
+}, true);
+document.getElementById('detect-environment').addEventListener('click', () => { detectEnvironment(); updateSummary(); });
 document.getElementById('forget-environment').addEventListener('click', () => {
     remember.checked = false;
     saveEnvironment();
@@ -54,6 +67,7 @@ form.addEventListener('reset', () => {
     const preference = remember.checked;
     setTimeout(() => {
         applyEnvironment(current);
+        updateSummary();
         remember.checked = preference;
         setDate();
         form.elements.reproducibility.value = 'Not retested';

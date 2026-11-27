@@ -16,7 +16,7 @@ if (!is_string($token) || !isset($_SESSION['csrf']) || !hash_equals($_SESSION['c
 }
 session_write_close();
 $required = ['date', 'project', 'device', 'page', 'whatidid', 'whathappened', 'reporttype', 'reproducibility'];
-$optional = ['orientation', 'expectation', 'suggestion', 'app_version', 'device_model', 'os', 'browser', 'context', 'viewport', 'screen', 'pixel_ratio', 'interface_preference', 'interface_mode', 'scenario_id'];
+$optional = ['orientation', 'expectation', 'suggestion', 'app_version', 'device_model', 'os', 'browser', 'context', 'viewport', 'screen', 'pixel_ratio', 'interface_mode', 'scenario_id'];
 $entry = [];
 foreach (array_merge($required, $optional) as $field) {
     $value = $_POST[$field] ?? '';
@@ -30,7 +30,6 @@ $choices = [
     'device' => ['Desktop', 'Laptop', 'Mobile phone', 'Tablet', 'Television', 'Other'],
     'orientation' => ['Landscape', 'Portrait', 'Unknown'],
     'context' => ['Browser tab', 'Installed PWA', 'Other', 'Unknown'],
-    'interface_preference' => ['Automatic', 'Simple', 'Standard', 'Not applicable', 'Unknown'],
     'interface_mode' => ['Simple', 'Standard', 'Not applicable', 'Unknown'],
     'reporttype' => ['Functional defect', 'Workflow friction', 'Visual or responsive issue', 'Browser/PWA compatibility issue', 'Accessibility issue', 'Performance issue', 'Automated test coverage gap', 'Future idea', 'Other'],
     'reproducibility' => ['Always', 'Sometimes', 'Once', 'Not retested'],
