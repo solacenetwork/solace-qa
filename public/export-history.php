@@ -14,9 +14,9 @@ header('Cache-Control: no-store');
 $exportState = null;
 $formatter = new IntlDateFormatter(
     'en_US', // Locale
-    IntlDateFormatter::FULL, // Date style
-    IntlDateFormatter::FULL, // Time style
-    'America/New_York'       // Timezone
+    IntlDateFormatter::LONG,    // Date style
+    IntlDateFormatter::SHORT,   // Time style
+    'America/New_York'          // Timezone
 );
 try {
     $exportState = qa_history_snapshot(dirname(__DIR__) . '/data');
@@ -55,8 +55,8 @@ try {
 <?php else: ?>
 <?php foreach ($exportState['history'] as $batch): ?>
 <article class="qa-history-item">
-<h3><?= htmlspecialchars($batch['archive_name'], ENT_QUOTES, 'UTF-8') ?></h3>
-<p><?= htmlspecialchars($batch['generated_at'], ENT_QUOTES, 'UTF-8') ?><br><?= (int) $batch['report_count'] ?> observations · <?= (int) $batch['image_count'] ?> screenshots</p>
+<h3><b>Name:</b> <?= htmlspecialchars($batch['archive_name'], ENT_QUOTES, 'UTF-8') ?></h3>
+<p><b>Date:</b> <?= htmlspecialchars($formatter->format(new DateTimeImmutable($batch['generated_at'])),ENT_QUOTES,'UTF-8') ?><br><br><?= (int) $batch['report_count'] ?> observations · <?= (int) $batch['image_count'] ?> screenshots</p>
 <?php if (($batch['reviewed_at'] ?? null) !== null): ?>
 <p><strong>Reviewed:</strong> <?= htmlspecialchars($batch['reviewed_at'], ENT_QUOTES, 'UTF-8') ?></p>
 <?php else: ?>
