@@ -72,7 +72,7 @@ if (!isset($_SESSION['csrf'])) {
 <div class="form-field"><label for="severitylevel" class="form-label">Severity (0 = not rated, 10 = high)</label><div class="form-range"><input type="range" class="form-range-input" id="severitylevel" name="severitylevel" min="0" max="10" step="1" value="0" list="severity-level-list"></div><datalist id="severity-level-list"><option value="0" label="Not Rated"></option><option value="5" label="Medium"></option><option value="10" label="High"></option></datalist><div class="qa-range-labels" aria-hidden="true"><span>Not rated</span><span>Medium</span><span>High</span></div><output for="severitylevel" id="severity-value">0</output></div>
 </div>
 </section>
-<div class="qa-actions"><button type="reset" class="btn-outline theme-danger">Reset observation</button><button type="submit" class="btn theme-success">Submit observation</button></div>
+<div class="qa-actions"><button type="reset" class="btn-outline theme-danger">Reset observation</button><button type="submit" class="btn-solid theme-success">Submit observation</button></div>
 </form>
 </main>
 </body>
