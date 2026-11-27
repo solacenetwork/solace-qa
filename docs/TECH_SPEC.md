@@ -4,18 +4,20 @@
 A small, application-independent internal observation capture and batch exchange tool. It records evidence, not confirmed defect decisions. GitHub documentation and Monday.com remain the issue-tracking systems.
 
 ## Environment and deployment
-- Vanilla PHP and JavaScript; Bootstrap 6 alpha.2 target (existing alpha.1 retained in QA-1 until dependency verification).
+- Vanilla PHP and JavaScript; Bootstrap 6 alpha.2 CSS pinned via jsDelivr; native form controls and vanilla JavaScript. Internet access expected.
 - PHP 8.1+; Fileinfo and ZipArchive required for later attachment/export stages.
 - Local: `php -S localhost:8000 -t public`.
 - Hostinger: deploy only contents of public/ into qa.solace.network/public_html/. Preserve hPanel-managed authentication files and HTTPS. Store runtime data in sibling data/; never deploy or overwrite it.
 - No database, Composer, npm, application login system or PWA.
 - Existing QA records are valuable even during alpha. Preserve valid reports, images and archives. Obsolete disposable development fixtures need no compatibility layer.
 
-## Planned capture contract
+## Capture contract (QA-2)
 Keep actions, actual and expected behavior, page/workflow, date, report type, suggestion and optional severity. Add project, scenario ID, app version/build, device/model, OS, browser/version, orientation, viewport/screen dimensions, pixel ratio, browser/PWA context, interface preference/effective mode and reproducibility (always/sometimes/once/not retested). Allow unknown values and manual overrides; reporting environment may differ from tested environment. Remember only reusable environment preferences locally. Add browser compatibility, accessibility, performance and coverage-gap classifications. Classification is preliminary.
 
+Environment detection is explicitly requested by the tester, never silently treated as the target environment. Saved preferences load on return; reset clears observation fields while retaining the current environment. Forget removes the saved preferences. Native date input defaults to local today. Existing QA-1 records remain intact; new records use reproducibility rather than the previous repeatable checkbox.
+
 ## Planned persistence and images
-Server-generated permanent report UUID. Optional multiple PNG/JPEG/WebP screenshots; validate actual image format, limit count/size, sanitize filename, prevent collisions, retain original quality. Paths relative to data/ use pics/<report-uuid>-<safe-name>-<date>.<ext>. Report records contain image associations. Keep storage outside web root. Use one stable lock file for all report/export mutations and atomic same-directory replacement of JSON. Failed uploads or writes must not commit incomplete observations. Use POST and CSRF protection for mutations before hosted acceptance.
+Server-generated permanent report UUID. Optional multiple PNG/JPEG/WebP screenshots; validate actual image format, limit count/size, sanitize filename, prevent collisions, retain original quality. Paths relative to data/ use pics/<report-uuid>-<safe-name>-<date>.<ext>. Report records contain image associations. Keep storage outside web root. Use one stable lock file for all report/export mutations and atomic same-directory replacement of JSON. QA-2 retains the previous valid JSON generation in submissions.json.bak using atomic replacement before updating the primary. Failed uploads or writes must not commit incomplete observations. Use POST and CSRF protection for mutations before hosted acceptance.
 
 ## Planned batch exchange
 Export only pending reports. ZIP contains manifest.json, submissions.json and associated pics/. Manifest includes format version, generator version, export UUID, ISO 8601 generated time, report/image counts, dataset inventory mapping report UUIDs to image paths, and file inventory with byte sizes and SHA-256 checksums (excluding manifest itself). Hashes verify integrity and identify identical contents, not authenticity. Report UUIDs identify records, export UUIDs identify batches. Do not silently discard distinct reports with identical images. Cross-batch image deduplication may be reported by hash; each archive remains self-contained.

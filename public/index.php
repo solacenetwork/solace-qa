@@ -1,167 +1,76 @@
+<?php
+declare(strict_types=1);
+session_start();
+if (!isset($_SESSION['csrf'])) {
+    $_SESSION['csrf'] = bin2hex(random_bytes(32));
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>SOLACE QA</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-B/GM4XqrwHnWXNOWMbloTmrYXZg10cakYGmpfsR/bbzQ6JAJI4ihuyADKLnBgrCe" crossorigin="anonymous">
-    </head>
-    <style>
-        body {
-            background-color: white;
-            color: black;
-            font-size: 16px;
-            font-family: Arial, Helvetica, sans-serif;
-            padding: 20px;
-        }
-    </style>
-    <body>
-
-        <div class="container-fluid" data-bs-theme="light">
-        <form action="formhandler.php" method="POST">
-
-            <header class="text-center mb-5">
-                <img src="assets/solace-logo-round-black.svg" alt="" width="80" style="height:auto">
-                <h1>SOLACE QA</h1>
-                <p>Test observations</p>
-            </header>
-
-            <div class="row mb-5">
-                <label for="datepicker" class="form-label fw-bold">Date</label>
-                <input type="text" class="form-control w-12" name="date" id="datepicker" autocomplete="off" placeholder="Choose date…">
-            </div>
-
-            <div class="row mb-5">
-                <div class="form-field">
-                    <label for="device" class="form-label fw-bold">Device</label>
-                    <select class="form-control" id="device" name="device" required>
-                        <option value="" selected>Select</option>
-                        <option value="Desktop">Desktop</option>
-                        <option value="Laptop">Laptop</option>
-                        <option value="Mobile phone">Mobile phone</option>
-                        <option value="Tablet">Tablet</option>
-                        <option value="Television">Television</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="row mb-5">
-                <div class="form-field">
-                    <label class="form-label fw-bold">Screen Orientation</label>
-                    <div class="form-field">
-                        <input type="radio" id="orientation1" class="radio" value="Landscape" name="orientation" checked />
-                        <label for="orientation1">Landscape</label>
-                    </div>
-                    <div class="form-field">
-                        <input type="radio" id="orientation2" class="radio" value="Portrait" name="orientation" />
-                        <label for="orientation2">Portrait</label>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="row mb-5">
-                <label for="page" class="form-label fw-bold">Page or workflow:</label>
-                <input type="text" class="form-control" id="page" name="page" placeholder="/gardens" required>
-            </div>
-
-            <div class="row mb-5">
-                <div class="form-field">
-                    <label for="whatidid" class="form-label fw-bold">What I did:</label>
-                    <textarea class="form-control" name="whatidid" id="whatidid" rows="5" required></textarea>
-                </div>
-            </div>
-
-            <div class="row mb-5">
-                <div class="form-field">
-                    <label for="whathappened" class="form-label fw-bold">What happened:</label>
-                    <textarea class="form-control" name="whathappened" id="whathappened" rows="5" required></textarea>
-                </div>
-            </div>
-            
-            <div class="row mb-5">
-                <div class="form-field">
-                    <label for="expectation" class="form-label fw-bold">What I expected / why it felt awkward:</label>
-                    <textarea class="form-control" name="expectation" id="expectation" rows="5"></textarea>
-                </div>
-            </div>
-
-            <div class="row mb-5">
-                <div class="form-field">
-                    <label for="reporttype" class="form-label fw-bold">Report Type</label>
-                    <select class="form-control" name="reporttype" id="reporttype" required>
-                        <option value="" selected>Select</option>
-                        <option value="Functional defect">Functional defect</option>
-                        <option value="Workflow friction">Workflow friction</option>
-                        <option value="Visual or responsive issue">Visual or responsive issue</option>
-                        <option value="Future idea">Future idea</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="row mb-5">
-                <div class="form-field">
-                    <label for="suggestion" class="form-label fw-bold">Possible improvement (optional):</label>
-                    <textarea class="form-control" name="suggestion" id="suggestion" rows="5"></textarea>
-                </div>
-            </div>
-
-            <hr/>
-
-            <div class="row justify-content-center align-items-center text-center my-5 g-4">
-                <div class="col-12 col-md-6">
-                    <label for="severitylevel" class="form-label fw-bold">
-                        Severity Level (optional):
-                    </label>
-                    <div class="form-range mx-auto">
-                        <input type="range"
-                            class="form-range-input"
-                            min="0" max="10" step="1" value="0"
-                            list="severityLevelList"
-                            name="severitylevel"
-                            id="severitylevel">
-                    </div>
-                    <datalist id="severityLevelList">
-                        <option value="0" label="Not Rated"></option>
-                        <option value="5" label="Medium"></option>
-                        <option value="10" label="High"></option>
-                    </datalist>
-                </div>
-
-                <div class="col-12 col-md-6">
-                    <div class="form-field">
-                        <input type="checkbox"
-                            name="repeatable"
-                            id="repeatable"
-                            class="check"
-                            checked>
-                        <label for="repeatable" class="fw-bold">
-                            Issue is repeatable
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <hr/><br/>
-    
-            <div class="my-5 text-center">
-                <button type="reset" class="btn-outline theme-danger btn-lg">Reset Form</button>
-                <button type="submit" class="btn-outline theme-success btn-lg">Submit Test Results</button>
-            </div>
-
-        </form>
-        </div>
-
-        <br/><br/>
-    
-        <script type="module" src="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-1a/pXj49ZQ1aHEmrJ+gMw1otqoVsYwlEnlD8mIfY2TV03r20Y0CN7uqx1tQogjPL" crossorigin="anonymous"></script>
-        <script type="module">
-            import { Datepicker } from 'https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/js/bootstrap.bundle.min.js';
-            const el = document.getElementById('datepicker');
-            const now = new Date();
-            const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;   
-            new Datepicker(el, { selectedDates: [today] });
-        </script>   
-    </body>    
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SOLACE QA</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="assets/qa.css" rel="stylesheet">
+<script src="assets/qa.js" defer></script>
+</head>
+<body>
+<main class="qa-main" data-bs-theme="light">
+<header class="qa-header">
+<img src="assets/solace-logo-round-black.svg" width="40" alt="">
+<h1>SOLACE QA</h1>
+</header>
+<p>Capture a testing observation. Required fields are marked *.</p>
+<form action="formhandler.php" method="post" id="observation-form">
+<input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf'], ENT_QUOTES, 'UTF-8') ?>">
+<section class="qa-section" aria-labelledby="environment-title">
+<h2 id="environment-title">Testing environment</h2>
+<p>Describe the application being tested, not necessarily this reporting browser. Detected values can be edited.</p>
+<div class="qa-grid">
+<div class="form-field"><label for="project" class="form-label">Project *</label><input type="text" class="form-control" id="project" name="project" maxlength="250" placeholder="SOLACE Garden" required></div>
+<div class="form-field"><label for="app_version" class="form-label">Application version / build</label><input type="text" class="form-control" id="app_version" name="app_version" maxlength="250" placeholder="0.0.3-alpha" ></div>
+<div class="form-field"><label for="device" class="form-label">Device *</label><select class="form-control" id="device" name="device" required><option value="">Select</option><option>Desktop</option><option>Laptop</option><option>Mobile phone</option><option>Tablet</option><option>Television</option><option>Other</option></select></div>
+<div class="form-field"><label for="device_model" class="form-label">Device model</label><input type="text" class="form-control" id="device_model" name="device_model" maxlength="250" placeholder="Galaxy S22" ></div>
+<div class="form-field"><label for="os" class="form-label">Operating system / version</label><input type="text" class="form-control" id="os" name="os" maxlength="250" placeholder="Android 16" ></div>
+<div class="form-field"><label for="browser" class="form-label">Browser / version</label><input type="text" class="form-control" id="browser" name="browser" maxlength="250" placeholder="Vivaldi" ></div>
+<div class="form-field"><label for="orientation" class="form-label">Screen orientation</label><select class="form-control" id="orientation" name="orientation" ><option value="">Select</option><option>Landscape</option><option>Portrait</option><option>Unknown</option></select></div>
+<div class="form-field"><label for="context" class="form-label">Execution context</label><select class="form-control" id="context" name="context" ><option value="">Select</option><option>Browser tab</option><option>Installed PWA</option><option>Other</option><option>Unknown</option></select></div>
+<div class="form-field"><label for="viewport" class="form-label">Viewport (CSS pixels)</label><input type="text" class="form-control" id="viewport" name="viewport" maxlength="250" placeholder="390 × 844" ></div>
+<div class="form-field"><label for="screen" class="form-label">Screen (CSS pixels)</label><input type="text" class="form-control" id="screen" name="screen" maxlength="250" placeholder="" ></div>
+<div class="form-field"><label for="pixel_ratio" class="form-label">Device pixel ratio</label><input type="text" class="form-control" id="pixel_ratio" name="pixel_ratio" maxlength="250" placeholder="" ></div>
+<div class="form-field"><label for="interface_preference" class="form-label">Interface preference</label><select class="form-control" id="interface_preference" name="interface_preference" ><option value="">Select</option><option>Automatic</option><option>Simple</option><option>Standard</option><option>Not applicable</option><option>Unknown</option></select></div>
+<div class="form-field"><label for="interface_mode" class="form-label">Effective interface mode</label><select class="form-control" id="interface_mode" name="interface_mode" ><option value="">Select</option><option>Simple</option><option>Standard</option><option>Not applicable</option><option>Unknown</option></select></div>
+</div>
+<div class="qa-actions">
+<button type="button" class="btn-outline" id="detect-environment">Use this browser's environment</button>
+<button type="button" class="btn-outline" id="forget-environment">Forget saved environment</button>
+</div>
+<div class="form-field"><input type="checkbox" class="check" id="remember-environment" checked><label for="remember-environment">Remember environment for future reports on this browser</label></div>
+<p id="environment-message" role="status"></p>
+</section>
+<section class="qa-section" aria-labelledby="scenario-title">
+<h2 id="scenario-title">Testing scenario</h2>
+<div class="qa-grid">
+<div class="form-field"><label for="date" class="form-label">Date *</label><input type="date" class="form-control" name="date" id="date" required></div>
+<div class="form-field"><label for="scenario_id" class="form-label">Scenario ID</label><input type="text" class="form-control" id="scenario_id" name="scenario_id" maxlength="250" placeholder="G-04" ></div>
+<div class="form-field"><label for="page" class="form-label">Page or workflow *</label><input type="text" class="form-control" id="page" name="page" maxlength="250" placeholder="/gardens" required></div>
+</div>
+</section>
+<section class="qa-section" aria-labelledby="observation-title">
+<h2 id="observation-title">Observation</h2>
+<div class="form-field"><label for="whatidid" class="form-label">What I did *</label><textarea class="form-control" name="whatidid" id="whatidid" rows="4" maxlength="5000" required></textarea></div>
+<div class="form-field"><label for="whathappened" class="form-label">What happened *</label><textarea class="form-control" name="whathappened" id="whathappened" rows="4" maxlength="5000" required></textarea></div>
+<div class="form-field"><label for="expectation" class="form-label">What I expected / why it felt awkward</label><textarea class="form-control" name="expectation" id="expectation" rows="4" maxlength="5000" ></textarea></div>
+<div class="form-field"><label for="suggestion" class="form-label">Possible improvement</label><textarea class="form-control" name="suggestion" id="suggestion" rows="4" maxlength="5000" ></textarea></div>
+<div class="qa-grid">
+<div class="form-field"><label for="reporttype" class="form-label">Report type *</label><select class="form-control" id="reporttype" name="reporttype" required><option value="">Select</option><option>Functional defect</option><option>Workflow friction</option><option>Visual or responsive issue</option><option>Browser/PWA compatibility issue</option><option>Accessibility issue</option><option>Performance issue</option><option>Automated test coverage gap</option><option>Future idea</option><option>Other</option></select></div>
+<div class="form-field"><label for="reproducibility" class="form-label">Reproducibility *</label><select class="form-control" id="reproducibility" name="reproducibility" required><option value="">Select</option><option>Always</option><option>Sometimes</option><option>Once</option><option>Not retested</option></select></div>
+<div class="form-field"><label for="severitylevel" class="form-label">Severity (0 = not rated, 10 = high)</label><input type="range" class="form-range-input" id="severitylevel" name="severitylevel" min="0" max="10" value="0"><output for="severitylevel" id="severity-value">0</output></div>
+</div>
+</section>
+<div class="qa-actions"><button type="reset" class="btn-outline theme-danger">Reset observation</button><button type="submit" class="btn theme-primary">Submit observation</button></div>
+</form>
+</main>
+</body>
 </html>
