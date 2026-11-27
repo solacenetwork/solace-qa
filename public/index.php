@@ -35,7 +35,7 @@ try {
 <img src="assets/solace-logo-round-black.svg" width="40" alt="">
 <h1>SOLACE QA</h1>
 </header>
-<p>Capture a testing observation. Required fields are marked *.</p>
+<p>Capture testing observations. Required fields are marked <b>*</b>.</p>
 <form action="formhandler.php" method="post" enctype="multipart/form-data" id="observation-form">
 <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
 <section class="qa-section" aria-labelledby="environment-title">
@@ -66,36 +66,44 @@ try {
 </div>
 </details>
 </section>
-<section class="qa-section" aria-labelledby="scenario-title">
-<h2 id="scenario-title">Testing scenario</h2>
-<div class="qa-grid">
-<div class="form-field"><label for="date" class="form-label">Date *</label><input type="date" class="form-control" name="date" id="date" required></div>
-<div class="form-field"><label for="scenario_id" class="form-label">Scenario ID</label><input type="text" class="form-control" id="scenario_id" name="scenario_id" maxlength="250" placeholder="G-04" ></div>
-<div class="form-field"><label for="page" class="form-label">Page or workflow *</label><input type="text" class="form-control" id="page" name="page" maxlength="250" placeholder="/gardens" required></div>
+<div class="border border-3 border-black rounded p-5">
+    <section class="qa-section" aria-labelledby="scenario-title">
+    <h2 id="scenario-title" class="fw-bold">Testing scenario</h2>
+    <div class="qa-grid">
+    <div class="form-field"><label for="date" class="form-label">Date *</label><input type="date" class="form-control" name="date" id="date" required></div>
+    <div class="form-field"><label for="scenario_id" class="form-label">Scenario ID</label><input type="text" class="form-control" id="scenario_id" name="scenario_id" maxlength="250" placeholder="G-04" ></div>
+    <div class="form-field"><label for="page" class="form-label">Page or workflow *</label><input type="text" class="form-control" id="page" name="page" maxlength="250" placeholder="/gardens" required></div>
+    </div>
+    </section>
+
+    <section class="qa-section" aria-labelledby="observation-title">
+    <h2 id="observation-title" class="fw-bold">Observation</h2>
+    <div class="form-field"><label for="whatidid" class="form-label">What I did *</label><textarea class="form-control" name="whatidid" id="whatidid" rows="4" maxlength="5000" required></textarea></div>
+    <div class="form-field"><label for="whathappened" class="form-label">What happened *</label><textarea class="form-control" name="whathappened" id="whathappened" rows="4" maxlength="5000" required></textarea></div>
+    <div class="form-field"><label for="expectation" class="form-label">What I expected / why it felt awkward</label><textarea class="form-control" name="expectation" id="expectation" rows="4" maxlength="5000" ></textarea></div>
+    <div class="form-field"><label for="suggestion" class="form-label">Possible improvement</label><textarea class="form-control" name="suggestion" id="suggestion" rows="4" maxlength="5000" ></textarea></div>
+    <div class="qa-grid">
+    <div class="form-field"><label for="reporttype" class="form-label">Report type *</label><select class="form-control" id="reporttype" name="reporttype" required><option value="">Select</option><option>Functional defect</option><option>Workflow friction</option><option>Visual or responsive issue</option><option>Browser/PWA compatibility issue</option><option>Accessibility issue</option><option>Performance issue</option><option>Automated test coverage gap</option><option>Future idea</option><option>Other</option></select></div>
+    <div class="form-field"><label for="reproducibility" class="form-label">Reproducibility *</label><select class="form-control" id="reproducibility" name="reproducibility" required><option value="">Select</option><option>Always</option><option>Sometimes</option><option>Once</option><option>Not retested</option></select></div>
+    <div class="form-field"><label for="severitylevel" class="form-label">Severity (0 = not rated, 10 = high)</label><div class="form-range"><input type="range" class="form-range-input" id="severitylevel" name="severitylevel" min="0" max="10" step="1" value="0" list="severity-level-list"></div><datalist id="severity-level-list"><option value="0" label="Not Rated"></option><option value="5" label="Medium"></option><option value="10" label="High"></option></datalist><div class="qa-range-labels" aria-hidden="true"><span>Not rated</span><span>Medium</span><span>High</span></div><output for="severitylevel" id="severity-value">0</output></div>
+    </div>
+    </section>
+
+    <section class="qa-section" aria-labelledby="screenshots-title">
+    <h2 id="screenshots-title">Screenshots (optional)</h2>
+    <div class="form-field">
+    <label for="screenshots" class="form-label">Attach screenshots</label>
+    <input type="file" class="form-control" id="screenshots" name="screenshots[]" accept="image/png,image/jpeg,image/webp" multiple aria-describedby="screenshots-help">
+    <small id="screenshots-help" class="form-text">Up to 5 PNG, JPEG or WebP images, 10 MiB each. Images are stored without resizing or recompression.</small>
+    </div>
+    </section>
 </div>
-</section>
-<section class="qa-section" aria-labelledby="observation-title">
-<h2 id="observation-title">Observation</h2>
-<div class="form-field"><label for="whatidid" class="form-label">What I did *</label><textarea class="form-control" name="whatidid" id="whatidid" rows="4" maxlength="5000" required></textarea></div>
-<div class="form-field"><label for="whathappened" class="form-label">What happened *</label><textarea class="form-control" name="whathappened" id="whathappened" rows="4" maxlength="5000" required></textarea></div>
-<div class="form-field"><label for="expectation" class="form-label">What I expected / why it felt awkward</label><textarea class="form-control" name="expectation" id="expectation" rows="4" maxlength="5000" ></textarea></div>
-<div class="form-field"><label for="suggestion" class="form-label">Possible improvement</label><textarea class="form-control" name="suggestion" id="suggestion" rows="4" maxlength="5000" ></textarea></div>
-<div class="qa-grid">
-<div class="form-field"><label for="reporttype" class="form-label">Report type *</label><select class="form-control" id="reporttype" name="reporttype" required><option value="">Select</option><option>Functional defect</option><option>Workflow friction</option><option>Visual or responsive issue</option><option>Browser/PWA compatibility issue</option><option>Accessibility issue</option><option>Performance issue</option><option>Automated test coverage gap</option><option>Future idea</option><option>Other</option></select></div>
-<div class="form-field"><label for="reproducibility" class="form-label">Reproducibility *</label><select class="form-control" id="reproducibility" name="reproducibility" required><option value="">Select</option><option>Always</option><option>Sometimes</option><option>Once</option><option>Not retested</option></select></div>
-<div class="form-field"><label for="severitylevel" class="form-label">Severity (0 = not rated, 10 = high)</label><div class="form-range"><input type="range" class="form-range-input" id="severitylevel" name="severitylevel" min="0" max="10" step="1" value="0" list="severity-level-list"></div><datalist id="severity-level-list"><option value="0" label="Not Rated"></option><option value="5" label="Medium"></option><option value="10" label="High"></option></datalist><div class="qa-range-labels" aria-hidden="true"><span>Not rated</span><span>Medium</span><span>High</span></div><output for="severitylevel" id="severity-value">0</output></div>
+<div class="qa-actions py-5 d-flex justify-content-center">
+    <button type="reset" class="btn-outline theme-danger btn-lg">Reset observation</button>
+    <button type="submit" class="btn-solid theme-success btn-lg">Submit observation</button>
 </div>
-</section>
-<section class="qa-section" aria-labelledby="screenshots-title">
-<h2 id="screenshots-title">Screenshots (optional)</h2>
-<div class="form-field">
-<label for="screenshots" class="form-label">Attach screenshots</label>
-<input type="file" class="form-control" id="screenshots" name="screenshots[]" accept="image/png,image/jpeg,image/webp" multiple aria-describedby="screenshots-help">
-<small id="screenshots-help" class="form-text">Up to 5 PNG, JPEG or WebP images, 10 MiB each. Images are stored without resizing or recompression.</small>
-</div>
-</section>
-<div class="qa-actions"><button type="reset" class="btn-outline theme-danger">Reset observation</button><button type="submit" class="btn-solid theme-success">Submit observation</button></div>
 </form>
+<br/>
 <section class="qa-section" aria-labelledby="export-title">
 <h2 id="export-title">Export observations</h2>
 <p>Create a verified ZIP of reports not previously exported. Existing observations and archives are retained.</p>
