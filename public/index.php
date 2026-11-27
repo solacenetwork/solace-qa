@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>SOLACE Garden: UI Review Test Observations</title>
+        <title>SOLACE QA</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-B/GM4XqrwHnWXNOWMbloTmrYXZg10cakYGmpfsR/bbzQ6JAJI4ihuyADKLnBgrCe" crossorigin="anonymous">
     </head>
     <style>
@@ -20,7 +20,11 @@
         <div class="container-fluid" data-bs-theme="light">
         <form action="formhandler.php" method="POST">
 
-            <h3 class="mb-5">SOLACE Garden: UI Review Test Observations</h3>
+            <header class="text-center mb-5">
+                <img src="assets/solace-logo-round-black.svg" alt="" width="80" style="height:auto">
+                <h1>SOLACE QA</h1>
+                <p>Test observations</p>
+            </header>
 
             <div class="row mb-5">
                 <label for="datepicker" class="form-label fw-bold">Date</label>
