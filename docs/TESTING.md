@@ -21,7 +21,15 @@ Follow-up application hardening: check the return value of `session_start()` on 
 5. On Hostinger, verify authenticated access, HTTPS, PHP write permission to sibling data/ and availability of Fileinfo/ZipArchive. Do not deploy a diagnostic phpinfo page.
 6. Verify redeploying public/ does not replace report data or authentication configuration.
 
-## QA-2 acceptance (pending)
+## QA-2 acceptance (accepted with notes, 2026-11-27)
+
+Tester reported all 19 manual acceptance checks passed and accepted the 10 refinement checks with one visual exception. The local PHP session permission issue was resolved using the setup above; successful submission to JSON was confirmed.
+
+Acceptance notes:
+- Tester reordered the environment actions locally: Forget on the left, detection/action on the right, consistent with Reset and Submit. Preserve this ordering when the change is committed.
+- Severity slider thumb position, labels, numeric output and saved values work, but the blue track fill does not follow the thumb. Non-blocking visual issue; correct and retest at 0, 5 and 10, including reset, in a subsequent refinement.
+- Session initialization error handling remains a follow-up as described above.
+
 1. Verify 40px logo beside heading, responsive wrap, alpha.2 CSS loads.
 2. Verify project, environment, scenario, observation and classification fields; date defaults to today.
 3. Use browser detection; verify editable values and no assumption they represent target application.
