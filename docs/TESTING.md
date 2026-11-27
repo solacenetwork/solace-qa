@@ -12,7 +12,7 @@ php -d session.save_path="$HOME/.php-sessions/solace-qa" -d upload_max_filesize=
 
 Open http://localhost:8001/. Use another unused port if necessary. If submission returns HTTP 403 with `Invalid form session. Please reload the form.`, check the PHP server log for `session_start()` permission or session-read failures. Restart with the above session path and reload the form; clear the localhost `PHPSESSID` cookie if needed. Do not weaken system PHP session permissions. Retry the submission and verify the report in `data/submissions.json`.
 
-Follow-up application hardening: check the return value of `session_start()` on the form and submission endpoints. If initialization fails, return an appropriate server configuration error (HTTP 500), do not render an unusable form or accept mutations, and keep internal paths and diagnostic details in server logs rather than the browser. Verify this failure path separately; the local launch workaround does not replace application error handling.
+Application hardening implemented in QA-3: both form and submission endpoints check the return value of `session_start()` and return HTTP 500 on initialization failure. Controlled failure-path testing remains deferred; production PHP must log errors rather than display internal diagnostic details. The local launch workaround does not replace application error handling.
 
 ## QA-1 acceptance (local functional pass, 2026-11-27)
 1. Start PHP with public/ as document root. Verify SOLACE QA title and round logo at 80 CSS px width.
@@ -44,7 +44,24 @@ Acceptance notes:
 
 Later acceptance must cover multiple devices, environment overrides, attachments, failed uploads, concurrent writes/exports, interrupted export recovery, checksum/count validation, repeat export exclusion, archive re-download and reviewed state.
 
-## QA-3 acceptance (pending)
+## QA-3 acceptance (accepted with technical testing limitations, 2026-11-27)
+
+Tester confirmed all 26 manual acceptance checks passed, including the QA-2 slider refinement and environment button ordering, UUID and JSON persistence, screenshot handling, validation and responsive behavior.
+
+Additional observed results:
+- A PNG incorrectly named Pt7qrUao9iP4.jpeg was identified as image/png by both Linux file and PHP Fileinfo. SOLACE QA stored it with a .png extension; SHA-256 hashes of the original and stored file matched.
+- Two JPEG files named screenshot1.jpg and screenshot1.jpeg normalized to the same base name and extension but were stored separately using attachment ordinals 1 and 2.
+- XCF, PDF and PHP files were rejected. A 16 MB image was also rejected; this confirms rejection of an oversized individual file, not the aggregate request limit.
+- Tester clarified the attachment help text to state that images are stored without resizing or recompression (commit bb2a835c).
+
+Technical testing disposition (single-user internal utility):
+- Concurrent submissions, controlled screenshot/JSON write failures and rollback cleanup, malformed/partial upload simulation, aggregate post_max_size rejection, and HTTP 500 session-initialization failure were not independently exercised; deferred, not passed.
+- Session-related HTTP 403 rejection was observed in QA-2; deliberate invalid-CSRF-token testing was not independently confirmed. Keep CSRF protection, locking, atomic writes, backups and error handling in place.
+- Revisit controlled failure and concurrency checks as usage expands, particularly before multi-user deployment or a potential MariaDB backend. Hosted configuration and storage isolation remain QA-6 checks.
+- For LAN testing, replace `-S localhost:8001` with `-S 0.0.0.0:8001` in the local setup command and connect using the host's LAN IP. The development server is unauthenticated; use only on a trusted LAN and stop it afterward.
+
+The original QA-3 verification scope follows for reference; technical cases listed above remain unverified.
+
 1. Submit without attachments; verify a unique UUID v4 in id, images: [] and success page ID.
 2. Submit PNG, JPEG and WebP screenshots together; verify each relative path, MIME and byte count, and compare originals to stored files (SHA-256 or cmp).
 3. Submit two files with the same basename; verify separate filenames and original bytes.
