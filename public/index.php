@@ -105,7 +105,7 @@ try {
 </form>
 <br/>
 <section class="qa-section" aria-labelledby="export-title">
-<h2 id="export-title">Export observations</h2>
+<h2 id="export-title" class="fw-bold">Export observations 📝</h2>
 <p>Create a verified ZIP of reports not previously exported. Existing observations and archives are retained.</p>
 <?php if ($exportState === null): ?>
 <p role="alert">Export status unavailable. Check the server log and reload the page. Observation capture remains available.</p>
@@ -121,7 +121,7 @@ try {
 <button type="submit" class="btn-solid theme-primary"<?= $exportState['pending'] === 0 ? ' disabled' : '' ?>>Export pending observations (<?= $exportState['pending'] ?>)</button>
 </form>
 <?php endif; ?>
-<a class="btn-outline theme-primary" href="export-history.php">View export history</a>
+<a class="btn-outline theme-primary" href="export-history.php">🕘 View export history</a>
 </div>
 </section>
 </main>

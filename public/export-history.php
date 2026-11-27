@@ -34,9 +34,10 @@ try {
 <img src="assets/solace-logo-round-black.svg" width="40" alt="">
 <h1>SOLACE QA</h1>
 </header>
-<p><a class="btn-outline theme-primary" href="index.php">Return to observation form</a></p>
+<p><a class="btn-outline theme-secondary" href="index.php">◁ Return to observation form</a></p>
 <section class="qa-section" id="export-history" aria-labelledby="history-title">
-<h2 id="history-title">Export history</h2>
+<h2 id="history-title" class="fw-bold mt-4">Export history</h2>
+<br/>
 <?php if (($_GET['review'] ?? '') === 'saved' && $exportState !== null): ?>
 <p role="status">Export marked as reviewed.</p>
 <?php endif; ?>
