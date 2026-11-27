@@ -1,6 +1,9 @@
 <?php
 declare(strict_types=1);
-session_start();
+if (!session_start()) {
+    http_response_code(500);
+    exit('Unable to initialize form session. Please contact the administrator.');
+}
 if (!isset($_SESSION['csrf'])) {
     $_SESSION['csrf'] = bin2hex(random_bytes(32));
 }
@@ -23,7 +26,7 @@ if (!isset($_SESSION['csrf'])) {
 <h1>SOLACE QA</h1>
 </header>
 <p>Capture a testing observation. Required fields are marked *.</p>
-<form action="formhandler.php" method="post" id="observation-form">
+<form action="formhandler.php" method="post" enctype="multipart/form-data" id="observation-form">
 <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf'], ENT_QUOTES, 'UTF-8') ?>">
 <section class="qa-section" aria-labelledby="environment-title">
 <details id="environment-details" open>
@@ -71,6 +74,14 @@ if (!isset($_SESSION['csrf'])) {
 <div class="form-field"><label for="reporttype" class="form-label">Report type *</label><select class="form-control" id="reporttype" name="reporttype" required><option value="">Select</option><option>Functional defect</option><option>Workflow friction</option><option>Visual or responsive issue</option><option>Browser/PWA compatibility issue</option><option>Accessibility issue</option><option>Performance issue</option><option>Automated test coverage gap</option><option>Future idea</option><option>Other</option></select></div>
 <div class="form-field"><label for="reproducibility" class="form-label">Reproducibility *</label><select class="form-control" id="reproducibility" name="reproducibility" required><option value="">Select</option><option>Always</option><option>Sometimes</option><option>Once</option><option>Not retested</option></select></div>
 <div class="form-field"><label for="severitylevel" class="form-label">Severity (0 = not rated, 10 = high)</label><div class="form-range"><input type="range" class="form-range-input" id="severitylevel" name="severitylevel" min="0" max="10" step="1" value="0" list="severity-level-list"></div><datalist id="severity-level-list"><option value="0" label="Not Rated"></option><option value="5" label="Medium"></option><option value="10" label="High"></option></datalist><div class="qa-range-labels" aria-hidden="true"><span>Not rated</span><span>Medium</span><span>High</span></div><output for="severitylevel" id="severity-value">0</output></div>
+</div>
+</section>
+<section class="qa-section" aria-labelledby="screenshots-title">
+<h2 id="screenshots-title">Screenshots (optional)</h2>
+<div class="form-field">
+<label for="screenshots" class="form-label">Attach screenshots</label>
+<input type="file" class="form-control" id="screenshots" name="screenshots[]" accept="image/png,image/jpeg,image/webp" multiple aria-describedby="screenshots-help">
+<small id="screenshots-help" class="form-text">Up to 5 PNG, JPEG or WebP images, 10 MiB each. Original files are retained. Server upload limits also apply.</small>
 </div>
 </section>
 <div class="qa-actions"><button type="reset" class="btn-outline theme-danger">Reset observation</button><button type="submit" class="btn-solid theme-success">Submit observation</button></div>

@@ -71,9 +71,15 @@ form.addEventListener('reset', () => {
         remember.checked = preference;
         setDate();
         form.elements.reproducibility.value = 'Not retested';
-        document.getElementById('severity-value').value = '0';
+        updateSeverity();
     }, 0);
 });
-form.elements.severitylevel.addEventListener('input', () => {
-    document.getElementById('severity-value').value = form.elements.severitylevel.value;
-});
+function updateSeverity() {
+    const input = form.elements.severitylevel;
+    const fraction = (Number(input.value) - Number(input.min)) / (Number(input.max) - Number(input.min));
+    input.closest('.form-range').style.setProperty('--bs-range-fill', String(fraction));
+    document.getElementById('severity-value').value = input.value;
+}
+form.elements.severitylevel.addEventListener('input', updateSeverity);
+form.elements.severitylevel.addEventListener('change', updateSeverity);
+updateSeverity();

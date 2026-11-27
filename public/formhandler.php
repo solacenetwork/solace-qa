@@ -1,7 +1,10 @@
 <?php
 declare(strict_types=1);
 date_default_timezone_set('America/New_York');
-session_start();
+if (!session_start()) {
+    http_response_code(500);
+    exit('Unable to initialize form session. Please contact the administrator.');
+}
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -9,6 +12,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit('Method Not Allowed.');
 }
 
+// PHP discards both POST and FILES when post_max_size is exceeded.
+if (empty($_POST) && empty($_FILES) && (int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > 0) {
+    http_response_code(413);
+    exit('Request exceeds the server upload limit. Please reduce the attachments and retry.');
+}
 $token = $_POST['csrf'] ?? '';
 if (!is_string($token) || !isset($_SESSION['csrf']) || !hash_equals($_SESSION['csrf'], $token)) {
     http_response_code(403);
@@ -54,61 +62,17 @@ $entry['severitylevel'] = $severity;
 
 $entry['submitted_at'] = date(DATE_ATOM);
 
-$directory = dirname(__DIR__) . '/data';
-$lock = null;
-$temp = null;
-$backupTemp = null;
+require_once __DIR__ . '/storage.php';
 try {
-    if (!is_dir($directory) && !mkdir($directory, 0700, true) && !is_dir($directory)) {
-        throw new RuntimeException('Cannot create data directory.');
-    }
-    $lock = fopen($directory . '/storage.lock', 'c');
-    if ($lock === false || !flock($lock, LOCK_EX)) {
-        throw new RuntimeException('Cannot acquire storage lock.');
-    }
-    $file = $directory . '/submissions.json';
-    $data = [];
-    if (file_exists($file)) {
-        $contents = file_get_contents($file);
-        if ($contents === false) {
-            throw new RuntimeException('Cannot read submissions.');
-        }
-        $data = json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
-        if (!is_array($data) || !array_is_list($data)) {
-            throw new RuntimeException('Invalid submissions file.');
-        }
-    }
-    // Preserve the previous valid generation atomically before replacing it.
-    if (isset($contents)) {
-        $backupTemp = tempnam($directory, '.backup-');
-        if ($backupTemp === false || file_put_contents($backupTemp, $contents) !== strlen($contents)
-            || !rename($backupTemp, $file . '.bak')) {
-            throw new RuntimeException('Cannot save previous generation.');
-        }
-        $backupTemp = null;
-    }
-    $data[] = $entry;
-    $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR) . "\n";
-    $temp = tempnam($directory, '.submissions-');
-    if ($temp === false || file_put_contents($temp, $json) !== strlen($json) || !rename($temp, $file)) {
-        throw new RuntimeException('Cannot save submissions.');
-    }
-    $temp = null;
+    $uploads = qa_validate_uploads($_FILES['screenshots'] ?? null);
+    $id = qa_store_report(dirname(__DIR__) . '/data', $entry, $uploads);
+} catch (InvalidArgumentException $error) {
+    http_response_code(400);
+    exit(htmlspecialchars($error->getMessage(), ENT_QUOTES, 'UTF-8'));
 } catch (Throwable $error) {
     error_log('SOLACE QA: ' . $error->getMessage());
     http_response_code(500);
     exit('Unable to save submission. Please retain your observation and retry.');
-} finally {
-    if (is_string($temp) && is_file($temp)) {
-        unlink($temp);
-    }
-    if (is_string($backupTemp) && is_file($backupTemp)) {
-        unlink($backupTemp);
-    }
-    if (is_resource($lock)) {
-        flock($lock, LOCK_UN);
-        fclose($lock);
-    }
 }
 ?>
 <!DOCTYPE html>
@@ -117,6 +81,7 @@ try {
 <body>
 <h1>Submission saved</h1>
 <p>Your test observation has been recorded.</p>
+<p>Report ID: <code><?= htmlspecialchars($id, ENT_QUOTES, 'UTF-8') ?></code></p>
 <p><a href="index.php">Submit another</a></p>
 </body>
 </html>
