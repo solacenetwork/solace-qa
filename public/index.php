@@ -81,7 +81,7 @@ if (!isset($_SESSION['csrf'])) {
 <div class="form-field">
 <label for="screenshots" class="form-label">Attach screenshots</label>
 <input type="file" class="form-control" id="screenshots" name="screenshots[]" accept="image/png,image/jpeg,image/webp" multiple aria-describedby="screenshots-help">
-<small id="screenshots-help" class="form-text">Up to 5 PNG, JPEG or WebP images, 10 MiB each. Original files are retained. Server upload limits also apply.</small>
+<small id="screenshots-help" class="form-text">Up to 5 PNG, JPEG or WebP images, 10 MiB each. Images are stored without resizing or recompression.</small>
 </div>
 </section>
 <div class="qa-actions"><button type="reset" class="btn-outline theme-danger">Reset observation</button><button type="submit" class="btn-solid theme-success">Submit observation</button></div>
