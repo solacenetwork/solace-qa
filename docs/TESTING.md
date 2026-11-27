@@ -19,7 +19,7 @@ Application hardening implemented in QA-3: both form and submission endpoints ch
 2. Submit a meaningful observation; verify data/submissions.json outside public/ contains it.
 3. Submit a second observation; verify both persist and invalid submissions do not alter data.
 4. Verify /data/submissions.json cannot be downloaded directly. Local curl returns the application form, not JSON. Isolation passes locally; verify independently on Hostinger.
-5. On Hostinger, verify authenticated access, HTTPS, PHP write permission to sibling data/ and availability of Fileinfo/ZipArchive. Do not deploy a diagnostic phpinfo page.
+5. On Hostinger, verify authenticated access, HTTPS, PHP write permission to sibling data/ and availability of `fileinfo`, `zip` and `intl` (QA-6 hosted verification). Do not deploy a diagnostic phpinfo page.
 6. Verify redeploying public/ does not replace report data or authentication configuration.
 
 ## QA-2 acceptance (accepted with notes, 2026-11-27)
@@ -95,6 +95,17 @@ Check `php -m | grep -i '^zip$'` before testing. Use disposable fixture data for
 10. Verify POST and CSRF protection; history interface and review mutation are QA-5.
 
 ## QA-5 acceptance (pending)
+
+Verify `intl` is enabled locally (`php -m | grep -i '^intl
+1. Open the form with existing QA-4 archives. Verify pending 0, exported 14 and archives 2 if the accepted test dataset is unchanged; export is disabled.
+2. Verify the observation form shows only the export summary and controls, not the archive list. View export history opens export-history.php; both archives appear newest first with correct dates, counts, filenames and Not reviewed. Return to observation form opens index.php.
+3. Download each historical ZIP and compare its SHA-256 with the existing history.
+4. Mark the older archive reviewed. Verify redirect to export-history.php, reviewed timestamp persisted after reload, other archive still unreviewed, and no changes to counts or ZIP contents.
+5. Submit a new observation and return to the form. Verify pending increases and export enables even if another batch is unreviewed.
+6. Export the new observation. Verify pending becomes zero and export disables on return; the export confirmation page links to export-history.php, which includes the new unreviewed archive while prior review status persists.
+7. Verify history and form usability on phone and desktop, including keyboard navigation and wrapped filenames.
+8. Optional fixture checks: invalid review ID, invalid CSRF, GET review request, repeated valid review request (timestamp unchanged), missing archive and recovery of finalized archive absent from history. Do not manipulate actual QA data to simulate errors.
+`). Generation and review dates should use readable US English long dates and short times in America/New_York while JSON retains ISO 8601 timestamps. During QA-6, confirm `fileinfo`, `zip` and `intl` are enabled in the hosted PHP runtime and verify both date displays on the deployed history page.
 
 1. Open the form with existing QA-4 archives. Verify pending 0, exported 14 and archives 2 if the accepted test dataset is unchanged; export is disabled.
 2. Verify the observation form shows only the export summary and controls, not the archive list. View export history opens export-history.php; both archives appear newest first with correct dates, counts, filenames and Not reviewed. Return to observation form opens index.php.
