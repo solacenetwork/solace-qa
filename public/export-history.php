@@ -12,11 +12,18 @@ $csrf = $_SESSION['csrf'];
 session_write_close();
 header('Cache-Control: no-store');
 $exportState = null;
+$formatter = new IntlDateFormatter(
+    'en_US', // Locale
+    IntlDateFormatter::FULL, // Date style
+    IntlDateFormatter::FULL, // Time style
+    'America/New_York'       // Timezone
+);
 try {
     $exportState = qa_history_snapshot(dirname(__DIR__) . '/data');
 } catch (Throwable $error) {
     error_log('SOLACE QA history: ' . $error->getMessage());
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

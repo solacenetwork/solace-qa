@@ -40,7 +40,7 @@ try {
 <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
 <section class="qa-section" aria-labelledby="environment-title">
 <details id="environment-details" open>
-<summary><span id="environment-title">Testing environment</span><span id="environment-summary"></span></summary>
+<summary><span id="environment-title">Testing Environment</span><span id="environment-summary"></span></summary>
 <div class="qa-environment-body">
 <p>Describe the application being tested, not necessarily this reporting browser. Detected values can be edited.</p>
 <div class="qa-grid">
@@ -68,7 +68,7 @@ try {
 </section>
 <div class="border border-3 border-black rounded p-5">
     <section class="qa-section" aria-labelledby="scenario-title">
-    <h2 id="scenario-title" class="fw-bold">Testing scenario</h2>
+    <h2 id="scenario-title" class="fw-bold">Testing Scenario</h2>
     <div class="qa-grid">
     <div class="form-field"><label for="date" class="form-label">Date *</label><input type="date" class="form-control" name="date" id="date" required></div>
     <div class="form-field"><label for="scenario_id" class="form-label">Scenario ID</label><input type="text" class="form-control" id="scenario_id" name="scenario_id" maxlength="250" placeholder="G-04" ></div>
@@ -105,7 +105,7 @@ try {
 </form>
 <br/>
 <section class="qa-section" aria-labelledby="export-title">
-<h2 id="export-title" class="fw-bold">Export observations 📝</h2>
+<h2 id="export-title" class="fw-bold py-3">Export Observations 📝➡️</h2>
 <p>Create a verified ZIP of reports not previously exported. Existing observations and archives are retained.</p>
 <?php if ($exportState === null): ?>
 <p role="alert">Export status unavailable. Check the server log and reload the page. Observation capture remains available.</p>
