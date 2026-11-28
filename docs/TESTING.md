@@ -94,24 +94,74 @@ Check `php -m | grep -i '^zip$'` before testing. Use disposable fixture data for
 9. Optional controlled fixture checks: missing referenced screenshot prevents export, restoring it permits retry; remove only the last history record from a disposable dataset and retry export to verify recovery of the finalized ZIP without duplicate creation. Do not edit actual QA history for testing.
 10. Verify POST and CSRF protection; history interface and review mutation are QA-5.
 
-## QA-5 acceptance (pending)
+## QA-5 acceptance (accepted, 2026-11-27)
 
-Verify `intl` is enabled locally (`php -m | grep -i '^intl
-1. Open the form with existing QA-4 archives. Verify pending 0, exported 14 and archives 2 if the accepted test dataset is unchanged; export is disabled.
-2. Verify the observation form shows only the export summary and controls, not the archive list. View export history opens export-history.php; both archives appear newest first with correct dates, counts, filenames and Not reviewed. Return to observation form opens index.php.
-3. Download each historical ZIP and compare its SHA-256 with the existing history.
-4. Mark the older archive reviewed. Verify redirect to export-history.php, reviewed timestamp persisted after reload, other archive still unreviewed, and no changes to counts or ZIP contents.
-5. Submit a new observation and return to the form. Verify pending increases and export enables even if another batch is unreviewed.
-6. Export the new observation. Verify pending becomes zero and export disables on return; the export confirmation page links to export-history.php, which includes the new unreviewed archive while prior review status persists.
-7. Verify history and form usability on phone and desktop, including keyboard navigation and wrapped filenames.
-8. Optional fixture checks: invalid review ID, invalid CSRF, GET review request, repeated valid review request (timestamp unchanged), missing archive and recovery of finalized archive absent from history. Do not manipulate actual QA data to simulate errors.
-`). Generation and review dates should use readable US English long dates and short times in America/New_York while JSON retains ISO 8601 timestamps. During QA-6, confirm `fileinfo`, `zip` and `intl` are enabled in the hosted PHP runtime and verify both date displays on the deployed history page.
+Tester confirmed all remaining manual acceptance checks passed on desktop and phone, including the 32-item functional checklist and seven additional navigation checks. The history list was moved to a separate export-history.php page, keeping the observation form compact. Pending counts and disabled export at zero, historical downloads, independent review status, persisted review timestamps and incremental exports passed.
 
-1. Open the form with existing QA-4 archives. Verify pending 0, exported 14 and archives 2 if the accepted test dataset is unchanged; export is disabled.
-2. Verify the observation form shows only the export summary and controls, not the archive list. View export history opens export-history.php; both archives appear newest first with correct dates, counts, filenames and Not reviewed. Return to observation form opens index.php.
-3. Download each historical ZIP and compare its SHA-256 with the existing history.
-4. Mark the older archive reviewed. Verify redirect to export-history.php, reviewed timestamp persisted after reload, other archive still unreviewed, and no changes to counts or ZIP contents.
-5. Submit a new observation and return to the form. Verify pending increases and export enables even if another batch is unreviewed.
-6. Export the new observation. Verify pending becomes zero and export disables on return; the export confirmation page links to export-history.php, which includes the new unreviewed archive while prior review status persists.
-7. Verify history and form usability on phone and desktop, including keyboard navigation and wrapped filenames.
-8. Optional fixture checks: invalid review ID, invalid CSRF, GET review request, repeated valid review request (timestamp unchanged), missing archive and recovery of finalized archive absent from history. Do not manipulate actual QA data to simulate errors.
+Presentation refinements accepted:
+- Generation and review dates use IntlDateFormatter (en_US, LONG/SHORT, America/New_York); JSON retains ISO 8601 timestamps.
+- The tester verified a reviewed archive's timestamp in export-history.json while the other two archives remained unreviewed.
+- The Bootstrap 6 dismissible review-success alert was tested successfully. Reload before dismissal intentionally retains the alert; dismissal cleans the query string and fragment so it does not reappear on reload.
+- Desktop and phone layout, navigation and usability passed; preserve the tester's styling refinements.
+
+Original functional scope for regression:
+1. Verify pending/exported/archive counts, export disabled at zero, and enabled after submission.
+2. Verify the observation form shows only the summary and controls. View export history opens export-history.php; archive list is newest first, with correct filenames, dates, counts and review state. Return navigation works.
+3. Download previous ZIPs and compare checksums.
+4. Mark a batch reviewed; verify redirect, persisted timestamp and independent review status. Counts and ZIP contents remain unchanged.
+5. Submit and export additional observations while earlier batches remain unreviewed; verify incremental selection, count updates and prior review state.
+6. Verify desktop/phone layout, keyboard operation, wrapped filenames and review confirmation dismissal.
+
+Optional fixture simulations (invalid CSRF, GET mutation, repeated review timestamp, missing archive, interrupted history recovery) were not separately confirmed. Retain safeguards and use disposable fixtures for such tests.
+
+## QA-6 acceptance (hosted functional acceptance passed, 2026-11-27)
+
+Tester reported all 35 acceptance checks in Sections A–E passed. Project closeout (Section F) is separate from functional acceptance.
+
+### A — Hostinger configuration (8/8)
+- PHP 8.4, matching the local minor version.
+- fileinfo, zip and intl enabled (three checks).
+- upload_max_filesize 256 MB; post_max_size 256 MB; max_file_uploads 20 (three checks).
+- Server date.timezone UTC retained; export and review endpoints and history display explicitly use America/New_York.
+
+### B — Deployment (5/5)
+- public/ contents deployed to public_html/; existing authentication preserved.
+- HTTPS verified.
+- Unauthenticated root request returned HTTP/2 401 and WWW-Authenticate: Basic realm="Restricted Access" in tester's curl output.
+- Private sibling data/ created; PHP initialized archives/ and storage.lock.
+
+### C — Hosted observation capture (6/6)
+Tester confirmed capture with and without screenshots, saved environment preferences, persisted JSON/UUID/image associations, mobile or tablet submission, and preservation of original screenshot bytes.
+
+### D — Hosted export and review (9/9)
+Tester confirmed pending counts, verified ZIP download, checksum comparison, incremental export, disabled export at zero, historical downloads, persisted review state, localized dates and alert dismissal/URL cleanup. First hosted archive exchanged during acceptance: qa-reports-2026-11-27-001.zip; 3 observations and 2 screenshots; supplied SHA-256:
+
+`51facb09268e796724c24f9c0362e3a47d6eb45f4902c05f57c62cfacce0d19f`
+
+The archive exchange was reported successful during acceptance. Original screenshot comparison and hosted history were verified by the tester rather than inferred from the ZIP alone.
+
+### E — Security and data preservation (7/7)
+Tester confirmed unauthenticated download endpoint denial, direct access denial for submissions.json, export-history.json and private screenshots/ZIPs, invalid export UUID handling, and retention of runtime data and authentication configuration across redeployment. These are functional isolation checks, not a comprehensive security audit.
+
+### F — Project closeout
+- QA-5 and QA-6 results documented; README and technical specification reconciled.
+- Branch merge and project-plan synchronization remain separate closeout actions.
+- Reset disposable hosted fixtures before recording real Garden observations (see below). Cleanup is not yet confirmed.
+
+### Deferred technical testing
+Controlled concurrent writes/exports, forced JSON or screenshot write failures, interrupted export recovery, malformed/partial uploads, aggregate request rejection, forced session initialization failure and deliberate CSRF/review endpoint failure simulations remain unverified unless specifically recorded otherwise. Do not count these as passed. Preserve the existing locking, atomic replacements, backups, validation and CSRF protections; revisit before broader or multi-user use.
+
+### Disposable hosted test data reset
+
+Only perform this procedure on a dataset confirmed to contain disposable acceptance fixtures, never on real QA evidence. Back up the dataset first if any uncertainty exists. Ensure no requests can be writing, exporting or reconciling data during cleanup (stop access temporarily or otherwise ensure exclusive maintenance).
+
+In the private sibling data/ directory, remove the following together:
+- submissions.json
+- submissions.json.bak
+- export-history.json
+- pics/ and its contents
+- archives/ and its contents
+
+Keep data/ and the stable storage.lock file. Do not delete public_html/ or authentication configuration. Do not delete only the reports while retaining archives or export history, because their report IDs would conflict with the empty dataset.
+
+Restore normal access and reload the observation page. Confirm pending, exported and archive counts are all zero, export is disabled, and the history page has no archives. PHP recreates required directories as needed. Browser-local environment preferences are separate; use Forget only if those also need resetting.
